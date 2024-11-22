@@ -19,8 +19,8 @@ You can get started by exploring the code!
 We've provided a few sanity checks:
 
 ```bash
-python -m unittest tests/tokenizer/test_character_tokenizer.py
-python -m unittest tests/transformer/test_attention.py
+python -m unittest tests/<folder>/<test_file>.py    # for single test file
+python -m unittest discover tests                   # for all tests (10 in total)
 ```
 
 However, these are not exhaustive, and also do not check for
