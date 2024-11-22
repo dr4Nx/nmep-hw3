@@ -44,9 +44,11 @@ class EncoderLayer(nn.Module):
     
     def __init__(self, 
                  num_heads: int, 
+                 embedding_dim: int,
                  ffn_hidden_dim: int,
                  qk_length: int, 
-                 value_length: int):
+                 value_length: int,
+                 dropout: float):
         """
         Each encoder layer will take in an embedding of
         shape (B, T, C) and will output an encoded representation
@@ -58,7 +60,8 @@ class EncoderLayer(nn.Module):
         Remember that for each Multi-Head Attention layer, we
         need create Q, K, and V matrices from the input embedding!
         """
-
+        super().__init__()
+    
         self.num_heads = num_heads
         self.ffn_hidden_dim = ffn_hidden_dim
         self.qk_length = qk_length
@@ -80,9 +83,12 @@ class Encoder(nn.Module):
                  vocab_size: int, 
                  num_layers: int, 
                  num_heads: int,
+                 embedding_dim: int,
                  ffn_hidden_dim: int,
                  qk_length: int,
-                 value_length: int):
+                 value_length: int,
+                 max_length: int,
+                 dropout: float):
         """
         Remember that the encoder will take in a sequence
         of tokens and will output an encoded representation
@@ -101,10 +107,12 @@ class Encoder(nn.Module):
         need to know how long each query/key is, and how long
         each value is.
         """
+        super().__init__()
 
         self.vocab_size = vocab_size
         self.num_layers = num_layers
         self.num_heads = num_heads
+        self.embedding_dim = embedding_dim
         self.ffn_hidden_dim = ffn_hidden_dim
 
         self.qk_length = qk_length

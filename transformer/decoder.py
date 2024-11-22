@@ -7,9 +7,11 @@ class DecoderLayer(nn.Module):
     
     def __init__(self, 
                  num_heads: int, 
+                 embedding_dim: int,
                  ffn_hidden_dim: int,
                  qk_length: int, 
-                 value_length: int):
+                 value_length: int,
+                 dropout: float = 0.1):
         """
         Each decoder layer will take in two embeddings of
         shape (B, T, C):
@@ -30,20 +32,22 @@ class DecoderLayer(nn.Module):
         Remember that for each Multi-Head Attention layer, we
         need create Q, K, and V matrices from the input embedding(s)!
         """
+        super().__init__()
 
         self.num_heads = num_heads
+        self.embedding_dim = embedding_dim
         self.ffn_hidden_dim = ffn_hidden_dim
         self.qk_length = qk_length
         self.value_length = value_length
 
         # Define any layers you'll need in the forward pass
-        raise NotImplementedError("Implement the EncoderLayer layer definitions!")
+        raise NotImplementedError("Implement the DecoderLayer layer definitions!")
     
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: torch.Tensor, enc_x: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
         """
-        The forward pass of the EncoderLayer.
+        The forward pass of the DecoderLayer.
         """
-        raise NotImplementedError("Implement the EncoderLayer forward method!")
+        raise NotImplementedError("Implement the DecoderLayer forward method!")
 
 
 class Decoder(nn.Module):
@@ -52,9 +56,12 @@ class Decoder(nn.Module):
                  vocab_size: int, 
                  num_layers: int, 
                  num_heads: int,
+                 embedding_dim: int,
                  ffn_hidden_dim: int,
                  qk_length: int,
-                 value_length: int):
+                 value_length: int,
+                 max_length: int,
+                 dropout: float = 0.1):
         """
         Remember that the decoder will take in a sequence
         of tokens AND a source embedding
@@ -72,10 +79,12 @@ class Decoder(nn.Module):
         need to know how long each query/key is, and how long
         each value is.
         """
+        super().__init__()
 
         self.vocab_size = vocab_size
         self.num_layers = num_layers
         self.num_heads = num_heads
+        self.embedding_dim = embedding_dim
         self.ffn_hidden_dim = ffn_hidden_dim
 
         self.qk_length = qk_length
@@ -91,9 +100,14 @@ class Decoder(nn.Module):
         # build out the Transformer decoder.
         raise NotImplementedError("Implement the Decoder layer definitions!")
 
+    def make_mask(self, x: torch.Tensor) -> torch.Tensor:
+        """
+        Create a mask to prevent attention to future tokens.
+        """
+        raise NotImplementedError("Implement the make_mask method!")
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: torch.Tensor, enc_x: torch.Tensor) -> torch.Tensor:
         """
         The forward pass of the Decoder.
         """
-        raise NotImplementedError("Implement the Encoder forward method!")
+        raise NotImplementedError("Implement the Decoder forward method!")

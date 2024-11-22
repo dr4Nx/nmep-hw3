@@ -86,7 +86,11 @@ class MultiHeadAttention(nn.Module):
         raise NotImplementedError("Implement the scaled_dot_product_attention method!")
 
 
-    def forward(self, Q: torch.Tensor, K: torch.Tensor, V: torch.Tensor) -> torch.Tensor:
+    def forward(self,
+                Q: torch.Tensor, 
+                K: torch.Tensor, 
+                V: torch.Tensor,
+                mask: Optional[torch.Tensor] = None) -> torch.Tensor:
         """
         The forward pass of the Multi-Head Attention layer.
 
@@ -94,6 +98,7 @@ class MultiHeadAttention(nn.Module):
             Q: torch.Tensor of shape (B, T, C)
             K: torch.Tensor of shape (B, T, C)
             V: torch.Tensor of shape (B, T, C)
+            mask: Optional torch.Tensor of shape (B, T, T) or None
 
         Returns:
             torch.Tensor of shape (B, T, C)
