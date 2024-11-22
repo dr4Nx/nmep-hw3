@@ -1,3 +1,5 @@
 __pycache__/
 resources/
 .DS_Store
+en-fr-full.csv
+en-fr.csv

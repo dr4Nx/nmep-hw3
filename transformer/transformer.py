@@ -10,6 +10,7 @@ class Transformer(nn.Module):
                  vocab_size: int, 
                  num_layers: int, 
                  num_heads: int,
+                 embedding_dim: int,
                  ffn_hidden_dim: int,
                  qk_length: int,
                  value_length: int):
@@ -33,6 +34,7 @@ class Transformer(nn.Module):
         self.vocab_size = vocab_size
         self.num_layers = num_layers
         self.num_heads = num_heads
+        self.embedding_dim = embedding_dim
         self.ffn_hidden_dim = ffn_hidden_dim
 
         self.qk_length = qk_length
