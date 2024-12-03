@@ -38,4 +38,7 @@ You've been given the `smaller.csv` dataset to train on. You can evaluate your m
 the checkpoint in a Jupyter notebook and seeing if it overfits on the training data.
 The expectation is to submit a screenshot of close-to-correct translations on your training data only.
 
+I would try overfitting the model on `en-fr-small.csv` first with smaller hyperparameters (e.g. `num_heads = 2`, `num_layers = 2`, etc.), 
+and then move to the larger dataset. This should validate your implementation and give you a good idea of how well your model is working.
+
 Good luck!
