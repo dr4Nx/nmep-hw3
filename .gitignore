@@ -3,3 +3,5 @@ resources/
 .DS_Store
 en-fr-full.csv
 en-fr.csv
+wandb
+ckpts
