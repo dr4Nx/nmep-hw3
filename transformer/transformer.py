@@ -13,6 +13,7 @@ class Transformer(nn.Module):
                  embedding_dim: int,
                  ffn_hidden_dim: int,
                  qk_length: int,
+                 max_length: int,
                  value_length: int):
         """
         Here, we implement the full Transformer model.
@@ -30,6 +31,7 @@ class Transformer(nn.Module):
         a sequence of logits representing the next token in
         the target sequence.
         """
+        super().__init__()
 
         self.vocab_size = vocab_size
         self.num_layers = num_layers
