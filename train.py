@@ -29,7 +29,7 @@ def main():
         if param.dim() > 1:
             torch.nn.init.xavier_uniform_(param)
 
-    device = "cpu"
+    device = "cuda"
     model.to(device)
 
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)

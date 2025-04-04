@@ -68,13 +68,25 @@ class EncoderLayer(nn.Module):
         self.value_length = value_length
 
         # Define any layers you'll need in the forward pass
-        raise NotImplementedError("Implement the EncoderLayer layer definitions!")
+        # raise NotImplementedError("Implement the EncoderLayer layer definitions!")
+        self.attention = MultiHeadAttention(num_heads, embedding_dim, qk_length, value_length)
+        self.norm1 = nn.LayerNorm(embedding_dim)
+        self.ffn = FeedForwardNN(embedding_dim, ffn_hidden_dim)
+        self.drop = nn.Dropout(dropout)
+        self.norm2 = nn.LayerNorm(embedding_dim)
     
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
         The forward pass of the EncoderLayer.
         """
-        raise NotImplementedError("Implement the EncoderLayer forward method!")
+        # raise NotImplementedError("Implement the EncoderLayer forward method!")
+
+        self.out1 = self.attention(x, x, x)
+        self.out2 = x + self.norm1(self.out1)
+        self.out3 = self.ffn(self.out2)
+        self.out3 = self.drop(self.out3)
+        self.out4 = self.out2 + self.norm2(self.out3)
+        return self.out4
 
 
 class Encoder(nn.Module):
@@ -126,12 +138,23 @@ class Encoder(nn.Module):
         # so we'll have to first create some kind of embedding
         # and then use the other layers we've implemented to
         # build out the Transformer encoder.
-        raise NotImplementedError("Implement the Encoder layer definitions!")
+        # raise NotImplementedError("Implement the Encoder layer definitions!")
+        self.embedding = nn.Embedding(vocab_size, embedding_dim)
+        self.positional_encoding = PositionalEncoding(embedding_dim, dropout=dropout, max_len=max_length)
+        self.encoders = nn.ModuleList(
+            [EncoderLayer(num_heads, embedding_dim, ffn_hidden_dim, qk_length, value_length, dropout) for _ in range(num_layers)]
+        )
 
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
         The forward pass of the Encoder.
         """
-        raise NotImplementedError("Implement the Encoder forward method!")
+        # raise NotImplementedError("Implement the Encoder forward method!")
+
+        self.out1 = self.embedding(x)
+        self.out2 = self.positional_encoding(self.out1)
+        for encoder in self.encoders:
+            self.out2 = encoder(self.out2)
+        return self.out2
 

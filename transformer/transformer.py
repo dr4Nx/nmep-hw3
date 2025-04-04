@@ -14,7 +14,8 @@ class Transformer(nn.Module):
                  ffn_hidden_dim: int,
                  qk_length: int,
                  max_length: int,
-                 value_length: int):
+                 value_length: int,
+                 dropout: float):
         """
         Here, we implement the full Transformer model.
 
@@ -38,15 +39,19 @@ class Transformer(nn.Module):
         self.num_heads = num_heads
         self.embedding_dim = embedding_dim
         self.ffn_hidden_dim = ffn_hidden_dim
-
         self.qk_length = qk_length
         self.value_length = value_length
+        self.dropout = dropout
 
         # Define any layers you'll need in the forward pass
         # Hint: This should be relatively simple, as you've
         # already implemented the Encoder and Decoder layers.
         # Check the `Attention Is All You Need` paper for guidance.
-        raise NotImplementedError("Implement the Transformer layer definitions!")
+        # raise NotImplementedError("Implement the Transformer layer definitions!")
+
+        self.encoder = Encoder(vocab_size, num_layers, num_heads, embedding_dim, ffn_hidden_dim, qk_length, value_length, max_length, dropout)
+        self.decoder = Decoder(vocab_size, num_layers, num_heads, embedding_dim, ffn_hidden_dim, qk_length, value_length, max_length, dropout)
+
 
     def forward(self, src: torch.Tensor, tgt: torch.Tensor) -> torch.Tensor:
         """
@@ -59,4 +64,8 @@ class Transformer(nn.Module):
         Returns:
             torch.Tensor with shape (B, T2, C) representing the output logits
         """
-        raise NotImplementedError("Implement the forward method!")
+        # raise NotImplementedError("Implement the forward method!")
+
+        self.out1 = self.encoder(src)
+        self.out2 = self.decoder(tgt, self.out1)
+        return self.out2

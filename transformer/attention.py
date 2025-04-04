@@ -38,7 +38,13 @@ class MultiHeadAttention(nn.Module):
 
         # Define any layers you'll need in the forward pass
         # (hint: number of Linear layers needed != 3)
-        raise NotImplementedError("Implement the Multi-Head Attention layer definitions!")
+        # raise NotImplementedError("Implement the Multi-Head Attention layer definitions!")
+
+        self.linearQ = nn.Linear(embedding_dim, num_heads * qk_length)
+        self.linearK = nn.Linear(embedding_dim, num_heads * qk_length)
+        self.linearV = nn.Linear(embedding_dim, num_heads * qk_length)
+
+        self.linearConcat = nn.Linear(num_heads * value_length, embedding_dim)
 
     def split_heads(self, x: torch.Tensor, vec_length: int) -> torch.Tensor:
         """
@@ -52,7 +58,13 @@ class MultiHeadAttention(nn.Module):
         Returns:
             torch.Tensor of shape (B, num_heads, T, vec_length)
         """
-        raise NotImplementedError("Implement the split_heads method!")
+        # raise NotImplementedError("Implement the split_heads method!")
+
+        if x.shape[2] == self.num_heads * vec_length:
+            # Reshape the tensor to split the last dimension into num_heads and vec_length
+            return x.view(x.shape[0], x.shape[1], self.num_heads, vec_length).transpose(1, 2)
+        else:
+            raise AssertionError 
         
 
     def combine_heads(self, x: torch.Tensor) -> torch.Tensor:
@@ -67,7 +79,9 @@ class MultiHeadAttention(nn.Module):
         Returns:
             torch.Tensor of shape (B, T, num_heads * vec_length)
         """
-        raise NotImplementedError("Implement the combine_heads method!")
+        # raise NotImplementedError("Implement the combine_heads method!")
+
+        return x.view(x.shape[0], x.shape[2], x.shape[1] * x.shape[3])
 
     def scaled_dot_product_attention(self, 
                                      Q: torch.Tensor, 
@@ -83,7 +97,14 @@ class MultiHeadAttention(nn.Module):
             V: torch.Tensor of shape (B, num_heads, T, value_length)
             mask: Optional torch.Tensor of shape (B, T, T) or None
         """
-        raise NotImplementedError("Implement the scaled_dot_product_attention method!")
+        # raise NotImplementedError("Implement the scaled_dot_product_attention method!")
+
+        attentionscores = torch.matmul(Q, K.transpose(-2, -1)) / (self.qk_length ** 0.5)
+        attentionweights = torch.nn.functional.softmax(attentionscores, dim=-1)
+        if mask is not None:
+            attentionscores = attentionscores.masked_fill(mask == 0, 0)
+        attentionoutput = torch.matmul(attentionweights, V)
+        return attentionoutput
 
 
     def forward(self,
@@ -103,7 +124,14 @@ class MultiHeadAttention(nn.Module):
         Returns:
             torch.Tensor of shape (B, T, C)
         """
-        raise NotImplementedError("Implement the forward method!")
+        # raise NotImplementedError("Implement the forward method!")
+        qout = self.split_heads(self.linearQ(Q), self.qk_length)
+        kout = self.split_heads(self.linearK(K), self.qk_length)
+        vout = self.split_heads(self.linearV(V), self.value_length)
+        attentionoutput = self.scaled_dot_product_attention(qout, kout, vout, mask)
+        attentionoutput = self.combine_heads(attentionoutput)
+        attentionoutput = self.linearConcat(attentionoutput)
+        return attentionoutput
 
 class FeedForwardNN(nn.Module):
 
@@ -128,10 +156,18 @@ class FeedForwardNN(nn.Module):
 
         # Define any layers you'll need in the forward pass
         self.relu = nn.ReLU()
-        raise NotImplementedError("Implement the FeedForwardNN layer definitions!")
+        # raise NotImplementedError("Implement the FeedForwardNN layer definitions!")
+
+        self.linear1 = nn.Linear(embedding_dim, hidden_dim)
+        self.linear2 = nn.Linear(hidden_dim, embedding_dim)
     
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
         The forward pass of the FeedForwardNN.
         """
-        raise NotImplementedError("Implement the FFN forward method!")
+        # raise NotImplementedError("Implement the FFN forward method!")
+
+        self.out1 = self.linear1(x)
+        self.out2 = self.relu(self.out1)
+        self.out3 = self.linear2(self.out2)
+        return self.out3

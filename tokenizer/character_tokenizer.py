@@ -1,4 +1,5 @@
 from .tokenizer import Tokenizer
+from typing import List, Dict, Tuple, Optional
 
 import torch
 
@@ -20,5 +21,23 @@ class CharacterTokenizer(Tokenizer):
         # we will use a fixed set of characters that we know will be present in the dataset.
         self.characters = "aàâæbcçdeéèêëfghiîïjklmnoôœpqrstuùûüvwxyÿz0123456789,;.!?:'\"/\\|_@#$%^&*~`+-=<>()[]{} "
 
-        raise NotImplementedError("Need to implement vocab initialization and the two functions from tokenizer")
+    def encode(self, text):
+        """
+        Encodes the input text into a list of tokens (characters).
+        """
+        encoded = []
+        for char in list(text.lower()):
+            encoded.append(self.characters.index(char))
+            
+        return encoded
+        
+    def decode(self, tokens):
+        """
+        Decodes a list of tokens (characters) back into the original text.
+        """
+        # Join the tokens to form the original text
+        decoded = ""
+        for num in tokens:
+            decoded += str(self.characters[num])
+        return decoded
 
